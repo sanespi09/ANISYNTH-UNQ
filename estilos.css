@@ -1,0 +1,13 @@
+header, body{
+    margin: 0 auto;
+    width: 1300px;
+}
+header{
+    height: 100px;
+}
+#logo_app{
+    padding-top: 20px;
+}
+#cont_canvas{
+    margin-top: 20px;
+}
