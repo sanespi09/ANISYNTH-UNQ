@@ -1,13 +1,25 @@
 header, body{
+    background-color: rgb(88, 86, 86);
     margin: 0 auto;
     width: 1300px;
 }
 header{
     height: 100px;
 }
-#logo_app{
+
+
+.logo-app{
+    text-align: center;
+    font-size: 2em;
+    margin: 0 auto;
     padding-top: 20px;
+    color: blanchedalmond;
 }
+ 
 #cont_canvas{
-    margin-top: 20px;
+    width: 800px;
+    height: 600px;
+    margin: 100px auto;
+    border: 5px solid black;
+
 }
