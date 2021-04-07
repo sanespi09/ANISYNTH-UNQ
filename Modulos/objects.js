@@ -1,19 +1,11 @@
-var sinObjStartX = 750;
-var sinObjStartY = 50;
-var sawObjStartX = 750;
-var sawObjStartY = 150;
-var triObjStartX = 750;
-var triObjStartY = 250;
-var noiseObjStartX = 750;
-var noiseObjStartY = 350;
-var binObjStart = [25, 575];
-
-
 class sinClass {
 
+      sinObjStartX = 750;
+      sinObjStartY = 50;
+
     constructor() {
-      this.x = sinObjStartX;
-      this.y = sinObjStartY;
+      this.x = this.sinObjStartX;
+      this.y = this.sinObjStartY;
       this.size = 50;
       this.freq;
       this.gain;
@@ -56,7 +48,7 @@ class sinClass {
         this.sinGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
         this.sinOsc.start()
         this.sinOsc.connect(this.sinGain)
-        this.sinGain.connect(audioctx.destination)
+        this.sinGain.connect(masterGain)
     }
 
     stop(){
@@ -68,9 +60,12 @@ class sinClass {
 
 class sawClass {
 
+    sawObjStartX = 750;
+    sawObjStartY = 150;
+
     constructor() {
-      this.x = sawObjStartX;
-      this.y = sawObjStartY;
+      this.x = this.sawObjStartX;
+      this.y = this.sawObjStartY;
       this.size = 50;
       
     }
@@ -114,7 +109,7 @@ class sawClass {
         this.sawGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
        
         this.sawOsc.connect(this.sawGain)
-        this.sawGain.connect(audioctx.destination)
+        this.sawGain.connect(masterGain)
         this.sawOsc.start()
     }
 
@@ -127,9 +122,12 @@ class sawClass {
 
 class triClass {
 
+      triObjStartX = 750;
+      triObjStartY = 250;
+
     constructor() {
-      this.x = triObjStartX;
-      this.y = triObjStartY;
+      this.x = this.triObjStartX;
+      this.y = this.triObjStartY;
       this.size = 50;
     }
 
@@ -168,7 +166,7 @@ class triClass {
         this.triGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
         this.triOsc.type = 'triangle'
         this.triOsc.connect(this.triGain)
-        this.triGain.connect(audioctx.destination)
+        this.triGain.connect(masterGain)
         this.triOsc.start()
     }
 
@@ -181,9 +179,13 @@ class triClass {
 
 class noiseClass {
 
+    noiseObjStartX = 750;
+    noiseObjStartY = 350;
+
     constructor() {
-      this.x = noiseObjStartX;
-      this.y = noiseObjStartY;
+
+      this.x = this.noiseObjStartX;
+      this.y = this.noiseObjStartY;
       this.size = 50;
 
     }
@@ -195,7 +197,7 @@ class noiseClass {
 
     dragActivo(){
         this.gain = map(this.y,0,height - (this.size/2), 0.7, 0.01);
-
+        this.x = Math.max(25, Math.min(mouseX, 675));
         this.y = Math.max(25, Math.min(mouseY, 575));
         this.noiseGain.gain.setValueAtTime(map(mouseY,0,height - (this.size/2), 0.4, 0.01), audioctx.currentTime)
     }
@@ -224,7 +226,7 @@ class noiseClass {
         this.noiseOsc.loop = true;
         this.noiseGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
         this.noiseOsc.connect(this.noiseGain)
-        this.noiseGain.connect(audioctx.destination)
+        this.noiseGain.connect(masterGain)
         this.noiseOsc.start()
     }
 
@@ -236,12 +238,13 @@ class noiseClass {
 }
 
   class binClass {
-
-   tamaño = 20;
+   
+    binObjStart = [25, 575];
+    tamaño = 20;
 
     constructor() {
-      this.x = binObjStart[0];
-      this.y = binObjStart[1];
+      this.x = this.binObjStart[0];
+      this.y = this.binObjStart[1];
       this.size = this.tamaño;
     }
 
@@ -250,5 +253,41 @@ class noiseClass {
       strokeWeight(3)
       line(this.x - this.size/2 , this.y + this.size/2 , this.x + this.size/2 , this.y - this.size/2 );
       line(this.x - this.size/2 , this.y - this.size/2 , this.x + this.size/2 , this.y + this.size/2 );
+    }
+}
+
+  class filterClass {
+
+   titlePos = [700, 400];
+   togglePos = [725, 450];
+   sliderPos = [740, 500];
+   toggleSize = { x: 50, y: 25 };
+   sliderSize = { y: 80, x: 20 };
+
+
+
+    constructor() {
+      this.filterSwitch = createToggle("Filtro", this.togglePos[0], this.togglePos[1], this.toggleSize.x, this.toggleSize.y)
+      this.freqSlider = createSliderV("Cutoff", this.sliderPos[0], this.sliderPos[1], this.sliderSize.x, this.sliderSize.y)
+    }
+
+    display() {
+      drawGui()
+    }
+
+    switchFilter() {
+  
+      console.log(this.filterSwitch.val)
+      
+      if(this.filterSwitch.val){
+        masterGain.disconnect(audioctx.destination)
+        masterFilter.connect(audioctx.destination)
+        masterGain.connect(masterFilter)
+      }
+      else if(!this.filterSwitch.val){
+        masterFilter.disconnect(audioctx.destination)
+        masterGain.disconnect(masterFilter)
+        masterGain.connect(audioctx.destination)
+      }
     }
 }
