@@ -23,7 +23,7 @@ class sinClass {
         this.y = Math.max(25, Math.min(mouseY, 575));
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(mouseY,0,height - (this.size/2), 1, 0.01);
+        this.gain = map(mouseY,0,height - (this.size/2), 0.2, 0.01);
 
         this.sinOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime);
         this.sinGain.gain.setValueAtTime(this.gain, audioctx.currentTime) 
@@ -40,7 +40,7 @@ class sinClass {
         this.xConst = Math.max(25, Math.min(this.x, 675));
         this.yConst = Math.max(25, Math.min(this.y, 575));
         this.freq = parseInt(map(this.xConst,25,675, 130, 262));
-        this.gain = map(this.yConst,0,height - (this.size/2), 1, 0.01);
+        this.gain = map(this.yConst,0,height - (this.size/2), 0.2, 0.01);
 
         this.sinGain = audioctx.createGain()
         this.sinOsc = audioctx.createOscillator()
@@ -81,7 +81,7 @@ class sawClass {
         this.y = Math.max(25, Math.min(mouseY, 575));
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 1, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
 
         
         this.sawOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime);
@@ -102,7 +102,7 @@ class sawClass {
         this.sawOsc.type = 'sawtooth'
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 1, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
 
         
         this.sawOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime)
@@ -142,7 +142,7 @@ class triClass {
         this.y = Math.max(25, Math.min(mouseY, 575));
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 1, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
 
         this.triOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime);
         this.triGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
@@ -158,7 +158,7 @@ class triClass {
     play(){
 
         this.freq = parseInt(map(this.x,25, 675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 1, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
 
         this.triGain = audioctx.createGain()
         this.triOsc = audioctx.createOscillator()
@@ -196,10 +196,10 @@ class noiseClass {
     }
 
     dragActivo(){
-        this.gain = map(this.y,0,height - (this.size/2), 0.7, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.01);
         this.x = Math.max(25, Math.min(mouseX, 675));
         this.y = Math.max(25, Math.min(mouseY, 575));
-        this.noiseGain.gain.setValueAtTime(map(mouseY,0,height - (this.size/2), 0.4, 0.01), audioctx.currentTime)
+        this.noiseGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
     }
   
     display() {
@@ -218,7 +218,7 @@ class noiseClass {
          this.noiseChannel[i] = Math.random() * 2 - 1
       }
       
-        this.gain = map(this.y,0,height - (this.size/2), 0.4, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.01);
 
         this.noiseGain = audioctx.createGain()
         this.noiseOsc = audioctx.createBufferSource()
@@ -259,16 +259,35 @@ class noiseClass {
   class filterClass {
 
    titlePos = [700, 400];
-   togglePos = [725, 450];
-   sliderPos = [740, 500];
+   togglePos = [725, 400];
+   sliderPos = [740, 450];
    toggleSize = { x: 50, y: 25 };
-   sliderSize = { y: 80, x: 20 };
-
-
+   sliderSize = { y: 130, x: 20 };
+   sliderVal = {min: 1, max: 100};
+   freqRange = {minF: Math.log(50), maxF: Math.log(18000)};
 
     constructor() {
+
       this.filterSwitch = createToggle("Filtro", this.togglePos[0], this.togglePos[1], this.toggleSize.x, this.toggleSize.y)
-      this.freqSlider = createSliderV("Cutoff", this.sliderPos[0], this.sliderPos[1], this.sliderSize.x, this.sliderSize.y)
+      this.filterSwitch.setStyle({
+        strokeWeight: 1,
+        rounding: 5,
+        fillBgOff: color('rgb(194, 194, 194)'),
+        fillBgOn: color('rgb(244, 244, 244)')
+      })
+
+      this.freqSlider = createSliderV("Cutoff", this.sliderPos[0], this.sliderPos[1], this.sliderSize.x, this.sliderSize.y, this.sliderVal.min, this.sliderVal.max)
+      this.freqSlider.setStyle({
+        strokeWeight: 1,
+        rounding: 5,
+        fillBg: color('rgb(194, 194, 194)'),
+        fillBgHover: color('rgb(194, 194, 194)'),
+        fillBgActive: color('rgb(194, 194, 194)'),
+        fillHandleHover: color('rgb(244, 244, 244)')
+      })
+
+      this.freqSlider.isInteger = true
+      this.step = (this.freqRange.maxF - this.freqRange.minF) / (this.sliderVal.max - this.sliderVal.min)
     }
 
     display() {
@@ -280,14 +299,27 @@ class noiseClass {
       console.log(this.filterSwitch.val)
       
       if(this.filterSwitch.val){
-        masterGain.disconnect(audioctx.destination)
+        masterGain.disconnect()
         masterFilter.connect(audioctx.destination)
         masterGain.connect(masterFilter)
       }
       else if(!this.filterSwitch.val){
-        masterFilter.disconnect(audioctx.destination)
-        masterGain.disconnect(masterFilter)
+        masterFilter.disconnect()
+        masterGain.disconnect()
         masterGain.connect(audioctx.destination)
       }
+    }
+
+    modFilter() {
+
+      let pos = this.freqSlider.val
+      let { minF } = this.freqRange
+      let { min } = this.sliderVal
+
+
+      let freq = parseInt(Math.exp( minF + (pos - min) * this.step ))
+      console.log(freq)
+      masterFilter.frequency.setValueAtTime(freq, audioctx.currentTime)
+      
     }
 }

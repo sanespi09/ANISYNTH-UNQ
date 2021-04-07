@@ -1,5 +1,6 @@
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
+var masterGain, masterFilter;
 let audioctx;
 let bg;
 const width = 800;
@@ -10,7 +11,7 @@ var objActivos = [];
 let objCaja = [];
 let objActivo;
 var audioInit = false;
-var masterGain, masterFilter;
+
 
 
 function setup(){
@@ -64,6 +65,7 @@ function draw(){
         objActivos[objActivos.length-1].dragInit();
     }
 
+    handleFilter()
 
 }
 
@@ -136,8 +138,10 @@ function mousePressed(){
 
     masterFilter = audioctx.createBiquadFilter();
     masterFilter.type = 'lowpass'
+    masterFilter.frequency.setValueAtTime(objCaja.find( e => e.constructor.name == 'filterClass' ).freqSlider.val, audioctx.currentTime)
 
-    console.log(audioInit)
+    console.log('Audio iniciado = ' + audioInit)
+    console.log(objCaja.find( e => e.constructor.name == 'filterClass' ).freqSlider.val)
     }
 
     if (mouseX > 700){
@@ -176,7 +180,6 @@ function suenaObj(){
 
 function clickObjCaja(){
     
-    let filter = objCaja.find( e => e.constructor.name == 'filterClass' )
     let dsin = parseInt(dist(mouseX, mouseY, objCaja[0].x, objCaja[0].y));
     let dsaw = parseInt(dist(mouseX, mouseY, objCaja[1].x, objCaja[1].y));
     let dtri = parseInt(dist(mouseX, mouseY, objCaja[2].x, objCaja[2].y));
@@ -197,16 +200,23 @@ function clickObjCaja(){
         objActivos.push(new noiseClass())
         objDrag = true;
 
-    }else if (filter.freqSlider.isChanged){
-        filter.modFilter()
-    }else if (filter.filterSwitch.isChanged){
-        filter.switchFilter()
     }
-    
     else {
         objDrag = false;
     }
 
+}
+function handleFilter() {
+
+    let filter = objCaja.find( e => e.constructor.name == 'filterClass' )
+
+    if (filter.freqSlider.isChanged){
+        filter.modFilter()
+        
+    }else if (filter.filterSwitch.isChanged){
+        
+        filter.switchFilter()
+    }
 }
 
 function mouseMoved (){
