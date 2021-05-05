@@ -2,7 +2,8 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 var masterGain, masterFilter;
 let audioctx;
-let bg;
+var bg;
+var gui;
 const width = 800;
 const height = 600;
 var objDragActivo = false;
@@ -11,19 +12,22 @@ var objActivos = [];
 let objCaja = [];
 let objActivo;
 var audioInit = false;
+var initDialog;
 
 
 
 function setup(){
 
+    colorMode(HSB, 360, 100, 100)
 
     //inicializo el canvas y lo asocio a un elemento del DOM
     var canvas = createCanvas(width, height);
-    createGui();
-
     canvas.parent('cont_canvas');
 
     bg = loadImage('../Recursos/grilla.png')
+    gui = createGui();
+    console.log(gui)
+    
     //inicializo los objetos de la caja de herramientas
     objCaja.push(new sinClass());
     objCaja.push(new sawClass());
@@ -31,30 +35,45 @@ function setup(){
     objCaja.push(new noiseClass());
     objCaja.push(new binClass());
     objCaja.push(new filterClass());
-
-    console.log(objCaja)
-
     
+    initDialog = new dialog('Esta aplicación hace uso de un motor de audio, debe aceptar o declinar', [ 'aceptar' , 'cancelar' ], width/2 , height/3, 40, initDialogClick)
+
+    console.log(initDialog)
+
 }
 
 function draw(){
+
+
  
     //actualiza el fondo en cada frame
     background(bg);
+
+    
     //Dibuja Caja de herramientas
     cajaHerramientas();
 
     //llama a la funcion que muestra los objetos activos en escena
+
+    if (initDialog){
+    initDialog.display()
+    }
+    
+
+    if (audioInit){
+    
     mostrarActivos();
 
+    handleFilter(false);
+
     //Llama a la funcion que chequea hovers sobre objetos activos
-    if (!objDragActivo && objActivos.length > 0){
+    if (!objDragActivo && objActivos.length > 0 && !mouseIsPressed){
      objActivo = checkMouseActivos()
     }
 
     //Llama a función que mueve objetos activos
-    if(mouseIsPressed && objActivo != null && mouseX < 700){
-        moverActivos(objActivo)
+    if(mouseIsPressed && objActivo != null && mouseX < 700 && !objDrag ){
+        moverActivos(objActivos[objActivo])
     }
     //Llama a función que maneja la eliminación de los objetos activos
     if(!objDrag && !objDragActivo){
@@ -62,10 +81,12 @@ function draw(){
     }
 
     if(objDrag){
-        objActivos[objActivos.length-1].dragInit();
+        moverActivos(objActivos[objActivos.length-1]);
+    }
     }
 
-    handleFilter()
+    drawGui()
+
 
 }
 
@@ -94,9 +115,21 @@ function checkMouseActivos(){
 
 function moverActivos (o){
 
+    xConsInit = Math.max(25, Math.min(mouseX, width - 25))
+    xCons = Math.max(25, Math.min(mouseX, width - 125))
+    yCons =  Math.max(25, Math.min(mouseY, height - 25))
+
     if (!objDrag){
         objDragActivo = true;
-        objActivos[o].dragActivo()
+        o.x = xCons
+        o.y = yCons
+        o.size = map(yCons, 25, 675, 80, 20)
+        o.modOsc()
+
+  } else {
+        o.x = xConsInit
+        o.y = yCons
+        o.size = map(yCons, 25, 675, 80, 20)
   }
 
 }
@@ -121,7 +154,7 @@ function cajaHerramientas(){
     rectMode(CORNER);
     rect(700, 0, 100, 600);
 
-    for (var i = 0; i < objCaja.length; i++) {
+    for (var i = 0; i < objCaja.length - 1 ; i++) {
         objCaja[i].display();
     }
 }
@@ -129,33 +162,24 @@ function cajaHerramientas(){
 
 function mousePressed(){
 
-    if(!audioInit){
-    audioctx = new AudioContext();
-    audioInit = true;
-
-    masterGain = audioctx.createGain();
-    masterGain.connect(audioctx.destination)
-
-    masterFilter = audioctx.createBiquadFilter();
-    masterFilter.type = 'lowpass'
-    masterFilter.frequency.setValueAtTime(objCaja.find( e => e.constructor.name == 'filterClass' ).freqSlider.val, audioctx.currentTime)
-
-    console.log('Audio iniciado = ' + audioInit)
-    console.log(objCaja.find( e => e.constructor.name == 'filterClass' ).freqSlider.val)
-    }
+    if(audioInit){
 
     if (mouseX > 700){
         clickObjCaja();   
     }
 }
+}
 
 function mouseReleased(){
+
+if (audioInit){    
 
 if(mouseX < 675){
 
     if(objDrag){
         objDrag = false;
         suenaObj();
+        handleFilter(true);
     }
 
     if(objDragActivo){
@@ -167,9 +191,25 @@ if(mouseX < 675){
     if(objDrag){
         objDrag = false;
         objActivos.pop();
+    }
+  }
+ }
 }
 
-}
+function iniciarAudio (){
+
+    audioctx = new AudioContext();
+    audioInit = true;
+
+    masterGain = audioctx.createGain();
+    masterGain.connect(audioctx.destination)
+
+    masterFilter = audioctx.createBiquadFilter();
+    masterFilter.type = 'lowpass'
+    masterFilter.frequency.setValueAtTime(18000, audioctx.currentTime)
+
+    console.log('Audio iniciado : ' + audioInit)
+
 }
 
 function suenaObj(){
@@ -206,24 +246,66 @@ function clickObjCaja(){
     }
 
 }
-function handleFilter() {
 
-    let filter = objCaja.find( e => e.constructor.name == 'filterClass' )
+function handleFilter(newObj) {
+
+    let filter = objCaja.find( e =>  e.constructor.name == 'filterClass' )
 
     if (filter.freqSlider.isChanged){
         filter.modFilter()
+        modOpacity(filter)
         
     }else if (filter.filterSwitch.isChanged){
         
         filter.switchFilter()
+        modOpacity(filter)
+    }
+    else if (newObj){
+        modOpacity(filter, newObj)
+    }
+
+}
+
+function modOpacity (f, newObj) {
+
+    let brightness = f.freqSlider.val
+
+    if (f.filterSwitch.val){
+        objActivos.forEach( e => {
+            e.bright = brightness
+            console.log(e.color)
+        })
+    } else if(!f.filterSwitch.val){
+        objActivos.forEach( e => {
+            e.bright = 100;
+        })
+    }else if(newObj){
+        objActivos[objActivos.length-1].bright = brightness
     }
 }
 
 function mouseMoved (){
 
-    if(mouseX > 700 || objDrag || objDragActivo || objActivo != null){
+    if( mouseX > 700 || objDrag || objDragActivo || objActivo != null ){
         cursor('pointer');
     }
     else 
         cursor('default');
+}
+
+function initDialogClick (val){
+
+    if (val){
+        console.log('se inicio el audio')
+        audioInit = true
+        iniciarAudio()
+    } else {
+        audioInit = false
+    }
+
+    initDialog.remove()
+    initDialog = null;
+
+    console.log(gui)
+    
 }

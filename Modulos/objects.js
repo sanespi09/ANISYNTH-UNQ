@@ -9,18 +9,21 @@ class sinClass {
       this.size = 50;
       this.freq;
       this.gain;
-            
+      this.bright = 100;
+      this.color = color(0, 0, this.bright)
+      this.prevBright;
+
     }
 
-    dragInit(){
-        this.x = mouseX;
-        this.y = mouseY;
-    }
+    // dragInit(){
+      //     this.x = mouseX;
+      //     this.y = mouseY;
+    // }
+    
+    modOsc(){
 
-    dragActivo(){
-
-        this.x = Math.max(25, Math.min(mouseX, 675));
-        this.y = Math.max(25, Math.min(mouseY, 575));
+        // this.x = Math.max(25, Math.min(mouseX, 675));
+        // this.y = Math.max(25, Math.min(mouseY, 575));
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
         this.gain = map(mouseY,0,height - (this.size/2), 0.2, 0.01);
@@ -30,9 +33,16 @@ class sinClass {
     }
   
     display() {
-      fill('white');
+      if (this.bright !== this.prevBright){
+        this.color = color(0, 0, this.bright)
+        this.prevBright = this.bright;
+      }
+
+      fill(this.color);
       strokeWeight(1);
       ellipse(this.x, this.y, this.size, this.size);
+
+      
     }
 
     play(){
@@ -64,21 +74,25 @@ class sawClass {
     sawObjStartY = 150;
 
     constructor() {
+
       this.x = this.sawObjStartX;
       this.y = this.sawObjStartY;
       this.size = 50;
+      this.bright = 100;
+      this.prevBright;
+      this.color = color(344, 100, this.bright)
       
     }
 
-    dragInit(){
-        this.x = mouseX;
-        this.y = mouseY;
-    }
+    // dragInit(){
+    //     this.x = mouseX;
+    //     this.y = mouseY;
+    // }
 
-    dragActivo(){
+    modOsc(){
 
-        this.x = Math.max(25, Math.min(mouseX, 675));
-        this.y = Math.max(25, Math.min(mouseY, 575));
+        // this.x = Math.max(25, Math.min(mouseX, 675));
+        // this.y = Math.max(25, Math.min(mouseY, 575));
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
         this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
@@ -89,8 +103,12 @@ class sawClass {
     }
   
     display() {
+      if(this.bright !== this.prevBright){
+        this.color = color(344, 100, this.bright)
+        this.prevBright = this.bright
+      }
 
-      fill('red');
+      fill(this.color);
       strokeWeight(1);
       rectMode(CENTER);
       rect(this.x, this.y, this.size, this.size);
@@ -129,17 +147,20 @@ class triClass {
       this.x = this.triObjStartX;
       this.y = this.triObjStartY;
       this.size = 50;
+      this.bright = 100;
+      this.prevBright;
+      this.color = color(139, 100, this.bright)
     }
 
-    dragInit(){
-        this.x = mouseX;
-        this.y = mouseY;
-    }
+    // dragInit(){
+    //     this.x = mouseX;
+    //     this.y = mouseY;
+    // }
 
-    dragActivo(){
+    modOsc(){
 
-        this.x = Math.max(25, Math.min(mouseX, 675));
-        this.y = Math.max(25, Math.min(mouseY, 575));
+        // this.x = Math.max(25, Math.min(mouseX, 675));
+        // this.y = Math.max(25, Math.min(mouseY, 575));
 
         this.freq = parseInt(map(this.x,25,675, 130, 262));
         this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
@@ -149,8 +170,12 @@ class triClass {
     }
   
     display() {
+      if(this.bright !== this.prevBright){
+        this.color = color(139, 100, this.bright)
+        this.prevBright = this.bright
+      }
 
-      fill('green');
+      fill(this.color);
       strokeWeight(1);
       triangle(this.x - this.size/2, this.y + this.size/2, this.x, this.y - this.size/2, this.x + this.size/2, this.y + this.size/2);
     }
@@ -187,15 +212,18 @@ class noiseClass {
       this.x = this.noiseObjStartX;
       this.y = this.noiseObjStartY;
       this.size = 50;
+      this.bright = 100;
+      this.prevBright;
+      this.color = color(295, 100, this.bright)
 
     }
 
-    dragInit(){
-        this.x = mouseX;
-        this.y = mouseY;
-    }
+    // dragInit(){
+    //     this.x = mouseX;
+    //     this.y = mouseY;
+    // }
 
-    dragActivo(){
+    modOsc(){
         this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.01);
         this.x = Math.max(25, Math.min(mouseX, 675));
         this.y = Math.max(25, Math.min(mouseY, 575));
@@ -203,8 +231,13 @@ class noiseClass {
     }
   
     display() {
+      if(this.bright !== this.prevBright){
+        this.color = color(295, 100, this.bright)
+        this.prevBright = this.bright
+      }
 
-      fill('pink');
+
+      fill(this.color);
       strokeWeight(1);
       ellipse(this.x, this.y, this.size, this.size);
     }
@@ -279,6 +312,7 @@ class noiseClass {
       this.freqSlider = createSliderV("Cutoff", this.sliderPos[0], this.sliderPos[1], this.sliderSize.x, this.sliderSize.y, this.sliderVal.min, this.sliderVal.max)
       this.freqSlider.setStyle({
         strokeWeight: 1,
+        trackWidth: 0,
         rounding: 5,
         fillBg: color('rgb(194, 194, 194)'),
         fillBgHover: color('rgb(194, 194, 194)'),
@@ -287,12 +321,13 @@ class noiseClass {
       })
 
       this.freqSlider.isInteger = true
+      this.freqSlider.val = 100
       this.step = (this.freqRange.maxF - this.freqRange.minF) / (this.sliderVal.max - this.sliderVal.min)
     }
 
-    display() {
-      drawGui()
-    }
+    // display() {
+    //   drawGui()
+    // }
 
     switchFilter() {
   
@@ -322,4 +357,98 @@ class noiseClass {
       masterFilter.frequency.setValueAtTime(freq, audioctx.currentTime)
       
     }
+}
+
+class dialog {
+
+
+  constructor( text, options, x, y, size, callback ){
+
+    
+    this.text = text
+    this.options = options
+    this.color = 'grey'
+    this.position = [ x , y ]
+    this.size = { w: width * (size/100) , h: height * (size/150)}
+
+    const offset = this.size.h/4
+
+    this.buttonPosX = [ this.position[0] + this.size.w/4, this.position[0] - this.size.w/4]
+    this.buttonPosY = this.position[1] + this.size.h/4
+    this.buttonSize = [ this.size.w/4 , this.size.h/8 ]
+    this.buttonStyle = { textSize: this.size.h/15 }
+
+    this.op1 = createButton( this.options[0], this.buttonPosX[0] - offset , this.buttonPosY, this.buttonSize[0] , this.buttonSize[1] )
+    this.op2 = createButton( this.options[1], this.buttonPosX[1] - offset , this.buttonPosY, this.buttonSize[0] , this.buttonSize[1] )
+    this.callback = callback
+
+    this.op1.setStyle(this.buttonStyle)
+    this.op2.setStyle(this.buttonStyle)
+
+    console.log(gui)
+
+  }
+
+  display(){
+
+    const [ posX , posY ] = this.position
+    const { w , h } = this.size
+    
+    
+    rectMode(CENTER)
+    fill(this.color)
+    rect( posX , posY , w , h )
+
+    textSize(h/10)
+    textAlign( CENTER )
+    fill('black')
+    strokeWeight(2)
+    text(this.text, posX , posY - h/10 , w * 0.8 , h/2 )
+
+    
+
+
+
+
+    this.mouseMoved()
+    this.handleClick()
+    console.log('sigo')
+    
+  }
+
+  mouseMoved(){
+    
+
+    this.buttonPosX.forEach( (e, i) => {
+      let distX = dist(mouseX, this.buttonPosY, e, this.buttonPosY)
+      let distY = dist(e, mouseY, e, this.buttonPosY)
+      if (distX <= this.buttonSize[0]/2 && distY <= this.buttonSize[1]/2){
+        cursor('pointer')
+      }
+    })
+  }
+
+    handleClick(){
+      this.buttonPosX.forEach( (e, i) => {
+        let distX = dist(mouseX, this.buttonPosY, e, this.buttonPosY)
+        let distY = dist(e, mouseY, e, this.buttonPosY)
+        if (distX <= this.buttonSize[0]/2 && distY <= this.buttonSize[1]/2 && mouseIsPressed){
+          if(i == 0){
+            this.callback(true)
+          }else{
+            this.callback(false)
+          }
+          console.log('sigo aca boludo')
+        }
+      })
+    }
+
+    remove(){
+      this.options.forEach( e => {
+        let index = gui.objects.findIndex( x => x.label === e )
+        gui.objects[index].enabled = false;
+        gui.objects[index].visible = false;
+      })
+    }
+
 }

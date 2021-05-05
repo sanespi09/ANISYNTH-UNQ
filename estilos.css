@@ -1,5 +1,5 @@
 header, body{
-    background-color: rgb(88, 86, 86);
+    background-color: rgb(99, 130, 134);
     margin: 0 auto;
     width: 1300px;
 }
@@ -13,7 +13,7 @@ header{
     font-size: 2em;
     margin: 0 auto;
     padding-top: 20px;
-    color: blanchedalmond;
+    color: rgb(255, 205, 129);
 }
  
 #cont_canvas{
