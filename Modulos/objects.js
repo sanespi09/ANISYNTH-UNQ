@@ -1,6 +1,6 @@
 class sinClass {
 
-      sinObjStartX = 750;
+      sinObjStartX = width - (cajaWidth/2);
       sinObjStartY = 50;
 
     constructor() {
@@ -25,8 +25,8 @@ class sinClass {
         // this.x = Math.max(25, Math.min(mouseX, 675));
         // this.y = Math.max(25, Math.min(mouseY, 575));
 
-        this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(mouseY,0,height - (this.size/2), 0.2, 0.01);
+        this.freq = parseInt(map(this.x,25, width - cajaWidth, 130, 262));
+        this.gain = map(mouseY,0,height - (this.size/2), 0.2, 0.001);
 
         this.sinOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime);
         this.sinGain.gain.setValueAtTime(this.gain, audioctx.currentTime) 
@@ -50,7 +50,7 @@ class sinClass {
         this.xConst = Math.max(25, Math.min(this.x, 675));
         this.yConst = Math.max(25, Math.min(this.y, 575));
         this.freq = parseInt(map(this.xConst,25,675, 130, 262));
-        this.gain = map(this.yConst,0,height - (this.size/2), 0.2, 0.01);
+        this.gain = map(this.yConst,0,height - (this.size/2), 0.2, 0.001);
 
         this.sinGain = audioctx.createGain()
         this.sinOsc = audioctx.createOscillator()
@@ -70,7 +70,7 @@ class sinClass {
 
 class sawClass {
 
-    sawObjStartX = 750;
+    sawObjStartX = width - (cajaWidth/2);;
     sawObjStartY = 150;
 
     constructor() {
@@ -94,8 +94,8 @@ class sawClass {
         // this.x = Math.max(25, Math.min(mouseX, 675));
         // this.y = Math.max(25, Math.min(mouseY, 575));
 
-        this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
+        this.freq = parseInt(map(this.x,25, width - cajaWidth, 130, 262));
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.001);
 
         
         this.sawOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime);
@@ -119,8 +119,8 @@ class sawClass {
         this.sawOsc = audioctx.createOscillator()
         this.sawOsc.type = 'sawtooth'
 
-        this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
+        this.freq = parseInt(map(this.x,25, width - cajaWidth, 130, 262));
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.001);
 
         
         this.sawOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime)
@@ -140,7 +140,7 @@ class sawClass {
 
 class triClass {
 
-      triObjStartX = 750;
+      triObjStartX = width - (cajaWidth/2);;
       triObjStartY = 250;
 
     constructor() {
@@ -162,8 +162,8 @@ class triClass {
         // this.x = Math.max(25, Math.min(mouseX, 675));
         // this.y = Math.max(25, Math.min(mouseY, 575));
 
-        this.freq = parseInt(map(this.x,25,675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
+        this.freq = parseInt(map(this.x,25, width - cajaWidth, 130, 262));
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.001);
 
         this.triOsc.frequency.setValueAtTime(this.freq, audioctx.currentTime);
         this.triGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
@@ -183,7 +183,7 @@ class triClass {
     play(){
 
         this.freq = parseInt(map(this.x,25, 675, 130, 262));
-        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.2, 0.001);
 
         this.triGain = audioctx.createGain()
         this.triOsc = audioctx.createOscillator()
@@ -204,7 +204,7 @@ class triClass {
 
 class noiseClass {
 
-    noiseObjStartX = 750;
+    noiseObjStartX = width - (cajaWidth/2);;
     noiseObjStartY = 350;
 
     constructor() {
@@ -224,9 +224,7 @@ class noiseClass {
     // }
 
     modOsc(){
-        this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.01);
-        this.x = Math.max(25, Math.min(mouseX, 675));
-        this.y = Math.max(25, Math.min(mouseY, 575));
+        this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.001);
         this.noiseGain.gain.setValueAtTime(this.gain, audioctx.currentTime)
     }
   
@@ -251,7 +249,7 @@ class noiseClass {
          this.noiseChannel[i] = Math.random() * 2 - 1
       }
       
-        this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.01);
+        this.gain = map(this.y,0,height - (this.size/2), 0.1, 0.001);
 
         this.noiseGain = audioctx.createGain()
         this.noiseOsc = audioctx.createBufferSource()
@@ -272,7 +270,7 @@ class noiseClass {
 
   class binClass {
    
-    binObjStart = [25, 575];
+    binObjStart = [25, height - 25];
     tamaño = 20;
 
     constructor() {
@@ -291,9 +289,9 @@ class noiseClass {
 
   class filterClass {
 
-   titlePos = [700, 400];
-   togglePos = [725, 400];
-   sliderPos = [740, 450];
+  //  titlePos = [700, 400];
+   togglePos = [ width - 75, height - 200];
+   sliderPos = [ width - 60, height - 150];
    toggleSize = { x: 50, y: 25 };
    sliderSize = { y: 130, x: 20 };
    sliderVal = {min: 1, max: 100};
@@ -362,13 +360,13 @@ class noiseClass {
 class dialog {
 
 
-  constructor( text, options, x, y, size, callback ){
+  constructor( text, options, size, callback ){
 
     
     this.text = text
     this.options = options
     this.color = 'grey'
-    this.position = [ x , y ]
+    this.position = [ width/2 , height/2 ]
     this.size = { w: width * (size/100) , h: height * (size/150)}
 
     const offset = this.size.h/4
@@ -380,13 +378,13 @@ class dialog {
 
     this.op1 = createButton( this.options[0], this.buttonPosX[0] - offset , this.buttonPosY, this.buttonSize[0] , this.buttonSize[1] )
     this.op2 = createButton( this.options[1], this.buttonPosX[1] - offset , this.buttonPosY, this.buttonSize[0] , this.buttonSize[1] )
-    this.callback = callback
 
     this.op1.setStyle(this.buttonStyle)
     this.op2.setStyle(this.buttonStyle)
 
-    console.log(gui)
+    this.callback = callback
 
+    console.log(gui)
   }
 
   display(){
@@ -404,11 +402,6 @@ class dialog {
     fill('black')
     strokeWeight(2)
     text(this.text, posX , posY - h/10 , w * 0.8 , h/2 )
-
-    
-
-
-
 
     this.mouseMoved()
     this.handleClick()

@@ -1,18 +1,19 @@
-
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 var masterGain, masterFilter;
 let audioctx;
 var bg;
 var gui;
-const width = 800;
-const height = 600;
-var objDragActivo = false;
-let objDrag = false;
+const width = 1280;
+const height = 720;
+const cajaWidth = 100;
+var objActivoDrag = false;
+let objCajaDrag = false;
 var objActivos = [];
 let objCaja = [];
 let objActivo;
 var audioInit = false;
 var initDialog;
+var appState = { dialogActive: false };
 
 
 
@@ -36,16 +37,17 @@ function setup(){
     objCaja.push(new binClass());
     objCaja.push(new filterClass());
     
-    initDialog = new dialog('Esta aplicación hace uso de un motor de audio, debe aceptar o declinar', [ 'aceptar' , 'cancelar' ], width/2 , height/3, 40, initDialogClick)
+    initDialog = new dialog('Esta aplicación hace uso de un motor de audio, debe aceptar o declinar', [ 'aceptar' , 'cancelar' ], 40, initDialogClick)
 
-    console.log(initDialog)
+    console.log(dialog)
 
 }
 
 function draw(){
 
 
- 
+   console.log(objActivo);
+
     //actualiza el fondo en cada frame
     background(bg);
 
@@ -54,11 +56,7 @@ function draw(){
     cajaHerramientas();
 
     //llama a la funcion que muestra los objetos activos en escena
-
-    if (initDialog){
-    initDialog.display()
-    }
-    
+ 
 
     if (audioInit){
     
@@ -67,27 +65,37 @@ function draw(){
     handleFilter(false);
 
     //Llama a la funcion que chequea hovers sobre objetos activos
-    if (!objDragActivo && objActivos.length > 0 && !mouseIsPressed){
+    if (!objActivoDrag && !mouseIsPressed){
      objActivo = checkMouseActivos()
     }
 
     //Llama a función que mueve objetos activos
-    if(mouseIsPressed && objActivo != null && mouseX < 700 && !objDrag ){
-        moverActivos(objActivos[objActivo])
+    if(mouseIsPressed && objActivo != null && mouseX < width - cajaWidth){
+        if(objCajaDrag)
+            moverActivos(objActivos[objActivos.length - 1]);
+        else{
+            moverActivos(objActivos[objActivo]);
+        }
     }
     //Llama a función que maneja la eliminación de los objetos activos
-    if(!objDrag && !objDragActivo){
+    if(!objCajaDrag && !objActivoDrag){
         eliminarObj();
     }
 
-    if(objDrag){
+    if(objCajaDrag){
         moverActivos(objActivos[objActivos.length-1]);
     }
     }
 
+
+    if(initDialog){
+        gui.objects[0].visible = false;
+        gui.objects[1].visible = false;
+        oscurecer();
+        initDialog.display();
+    }
+
     drawGui()
-
-
 }
 
 function mostrarActivos() {
@@ -100,27 +108,44 @@ function mostrarActivos() {
 function checkMouseActivos(){
 
     let o;
- 
+    
+    // if(mouseX < width - cajaWidth){
+
    objActivos.forEach((v, i) => {
        let d = parseInt(dist(mouseX, mouseY, v.x, v.y))
        if(d < v.size/2){
            o = i;
         }
     })
+    // else {
+    //     objCaja.forEach((v, i) => {
+    //         let d = parseInt(dist(mouseX, mouseY, v.x, v.y))
+    //         if(d < v.size/2){
+    //             o = v;
+    //          }
+    //      })
+    // }
 
    console.log(o)
    return o;
 
 }
 
+function oscurecer (){
+    fill('rgba(0,0,0,0.9)')
+    rect(width/2, height/2, width, height);
+}
+
 function moverActivos (o){
 
-    xConsInit = Math.max(25, Math.min(mouseX, width - 25))
-    xCons = Math.max(25, Math.min(mouseX, width - 125))
-    yCons =  Math.max(25, Math.min(mouseY, height - 25))
+    xConsInit = Math.max(o.size/2, Math.min(mouseX, width - o.size/2))
+    xCons = Math.max(o.size/2, Math.min(mouseX, width - cajaWidth - o.size/2))
+    yCons =  Math.max(o.size/2, Math.min(mouseY, height - o.size/2))
 
-    if (!objDrag){
-        objDragActivo = true;
+    console.log(xCons)
+
+    if (!objCajaDrag){
+        objActivoDrag = true;
         o.x = xCons
         o.y = yCons
         o.size = map(yCons, 25, 675, 80, 20)
@@ -152,7 +177,7 @@ function cajaHerramientas(){
 
     fill('grey');
     rectMode(CORNER);
-    rect(700, 0, 100, 600);
+    rect(width - cajaWidth, 0, cajaWidth, height);
 
     for (var i = 0; i < objCaja.length - 1 ; i++) {
         objCaja[i].display();
@@ -164,7 +189,7 @@ function mousePressed(){
 
     if(audioInit){
 
-    if (mouseX > 700){
+    if (mouseX > width - cajaWidth){
         clickObjCaja();   
     }
 }
@@ -174,22 +199,22 @@ function mouseReleased(){
 
 if (audioInit){    
 
-if(mouseX < 675){
+if(mouseX < width - cajaWidth - 25){
 
-    if(objDrag){
-        objDrag = false;
+    if(objCajaDrag){
+        objCajaDrag = false;
         suenaObj();
         handleFilter(true);
     }
 
-    if(objDragActivo){
-        objDragActivo = false
+    if(objActivoDrag){
+        objActivoDrag = false
     }
     
 }else{
 
-    if(objDrag){
-        objDrag = false;
+    if(objCajaDrag){
+        objCajaDrag = false;
         objActivos.pop();
     }
   }
@@ -227,24 +252,23 @@ function clickObjCaja(){
 
     if (dsin < (objCaja[0].size / 2)){
         objActivos.push(new sinClass());
-        objDrag = true;
+        objCajaDrag = true;
         
     }else if (dsaw < (objCaja[1].size / 2)){
         objActivos.push(new sawClass())
-        objDrag = true;
+        objCajaDrag = true;
         
     }else if (dtri < (objCaja[2].size / 2)){
         objActivos.push(new triClass())
-        objDrag = true;
+        objCajaDrag = true;
     }else if (dnoise < (objCaja[2].size / 2)){
         objActivos.push(new noiseClass())
-        objDrag = true;
+        objCajaDrag = true;
 
     }
     else {
-        objDrag = false;
+        objCajaDrag = false;
     }
-
 }
 
 function handleFilter(newObj) {
@@ -268,7 +292,7 @@ function handleFilter(newObj) {
 
 function modOpacity (f, newObj) {
 
-    let brightness = f.freqSlider.val
+    let brightness = Math.max(20, min(f.freqSlider.val, 100))
 
     if (f.filterSwitch.val){
         objActivos.forEach( e => {
@@ -286,7 +310,7 @@ function modOpacity (f, newObj) {
 
 function mouseMoved (){
 
-    if( mouseX > 700 || objDrag || objDragActivo || objActivo != null ){
+    if( mouseX > width - cajaWidth || objCajaDrag || objActivoDrag || objActivo != null ){
         cursor('pointer');
     }
     else 
@@ -304,6 +328,8 @@ function initDialogClick (val){
     }
 
     initDialog.remove()
+    gui.objects[0].visible = true;
+    gui.objects[1].visible = true;
     initDialog = null;
 
     console.log(gui)
